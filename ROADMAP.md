@@ -1,4 +1,4 @@
-# EVE Cortex
+# EVE Cortex Roadmap
 
 - [ ] market-stats
   - [ ] Fuzzwork
