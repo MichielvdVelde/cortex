@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    // Output
+    "declaration": true,
+    "sourceMap": true,
+    // Options
+    "allowJs": true,
+    // "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "module": "esnext",
+    "paths": {
+      "cortex/*": [
+        "*"
+      ],
+    },
+    "target": "esnext",
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
+    "resolveJsonModule": true,
+    // Strictness
+    "isolatedModules": true,
+    "noEmitOnError": false,
+    "noImplicitOverride": true,
+    // TODO: Re-enable this when nodejs types have been fixed
+    "skipLibCheck": true,
+    "strict": true,
+  },
+}

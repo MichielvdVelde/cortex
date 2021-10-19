@@ -1,0 +1,56 @@
+{
+  "name": "cortex",
+  "version": "0.0.1",
+  "author": "Michiel van der Velde <michiel@michielvdvelde.nl>",
+  "license": "ISC",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "bin": {
+    "cortex": "./bin/cortex.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "exports": {
+    "./*": "./dist/*"
+  },
+  "devDependencies": {
+    "@types/ioredis": "^4.27.4",
+    "@types/koa": "^2.13.4",
+    "@types/koa__cors": "^3.0.3",
+    "@types/koa__router": "^8.0.8",
+    "@types/koa-bodyparser": "^4.3.3",
+    "@types/koa-conditional-get": "^2.0.0",
+    "@types/koa-etag": "^3.0.0",
+    "@types/koa-session": "^5.10.4",
+    "@types/koa-static": "^4.0.2",
+    "@types/mustache": "^4.1.2",
+    "@types/node": "^16.9.2",
+    "type-fest": "^2.3.3"
+  },
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "@koa/router": "^10.1.1",
+    "bullmq": "^1.47.1",
+    "camelcase-keys": "^7.0.1",
+    "dotenv": "^10.0.0",
+    "eve-sso": "^1.3.1",
+    "iam-policies": "^4.12.0",
+    "ioredis": "^4.27.9",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-conditional-get": "^3.0.0",
+    "koa-etag": "^4.0.0",
+    "koa-session": "^6.2.0",
+    "koa-static": "^5.0.0",
+    "mongodb": "^4.1.2",
+    "mongoose": "^6.0.7",
+    "mustache": "^4.2.0",
+    "nanoid": "^3.1.25",
+    "node-fetch": "^3.0.0",
+    "yup": "^0.32.9"
+  }
+}
