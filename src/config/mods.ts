@@ -1,21 +1,10 @@
 import { join } from 'path'
+import { deduplicate } from 'cortex/utility/utility'
 
 export type Provide = 'api' | 'storage' | 'processor'
 export type Manifest = {
   provides: Provide | Provide[] | null,
   dependencies?: string[],
-}
-
-function deduplicate<T>(...arrays: T[][]) {
-  const result: T[] = []
-  for (const array of arrays) {
-    for (const value of array) {
-      if (!result.includes(value)) {
-        result.push(value)
-      }
-    }
-  }
-  return result
 }
 
 export const requiredMods = ['cortex/mods/core']

@@ -89,7 +89,7 @@ hooks.register('route', {
       })
     }
 
-    return deletedCount
+    return deletedCount === 1
   }
 })
 

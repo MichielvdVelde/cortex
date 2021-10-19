@@ -115,7 +115,7 @@ hooks.register('route', {
 
     const token = await findToken({
       characterId: context.identity!.characterId,
-      scopes: { $in: scopes },
+      scopes: { $all: scopes },
     }, { refresh: false })
 
     return token ? true : false
