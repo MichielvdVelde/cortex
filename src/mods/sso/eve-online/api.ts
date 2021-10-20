@@ -1,13 +1,13 @@
 import type { State } from '.'
-import type { Scope } from './types'
+import type { Scope } from 'cortex/mods/eve-online/types'
 import type { Account, User } from 'cortex/mods/auth'
 import { nanoid } from 'nanoid/async'
 import HttpErrors from 'http-errors'
 import { hooks } from 'cortex/api'
 import { getDb } from 'cortex/storage/mongodb'
-import { getScopesFor } from './scopes'
+import { getScopesFor } from '../../eve-online/scopes'
 import { exchangeCode, generateRedirectUrl } from './sso'
-import { getCharacter } from './functions'
+import { getCharacter } from 'cortex/mods/eve-online/functions'
 
 hooks.register('route', {
   path: '/sso/eve-online/redirect',

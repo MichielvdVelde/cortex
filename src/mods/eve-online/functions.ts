@@ -1,9 +1,13 @@
 import type { Filter } from 'mongodb'
-import type { Token } from '.'
+import type { Token } from 'cortex/mods/sso/eve-online'
 import type { Character, Corporation, Item, Structure } from './types'
+import type { JsonObject, JsonArray } from 'type-fest'
 import fetch from 'node-fetch'
+import { nanoid } from 'nanoid/async'
 import { getDb } from 'cortex/storage/mongodb'
-import { exchangeCode } from './sso'
+import { exchangeCode } from 'cortex/mods/sso/eve-online/sso'
+
+export const ESI_URL = 'https://esi.evetech.net/latest'
 
 export async function getItem(typeId: number): Promise<Item> {
   return fetchEsiIntoCollection(`/universe/types/${typeId}/`, 'types', typeId) as Promise<Item>
@@ -28,6 +32,7 @@ export async function getStructure(structureId: number): Promise<Structure> {
   return fetchEsiIntoCollection(`/universe/structures/${structureId}/`, 'structures', structureId, token?.accessToken) as Promise<Structure>
 }
 
+/** Fetch a resource from ESI and store it in its own collection. */
 export async function fetchEsiIntoCollection(
   uri: string,
   collectionName: string,
@@ -50,7 +55,7 @@ export async function fetchEsiIntoCollection(
     headers['Authorization'] = `Bearer ${token}`
   }
 
-  const response = await fetch(`https://esi.evetech.net/latest${uri}`, { headers })
+  const response = await fetch(`${ESI_URL}${uri}`, { headers })
 
   if (document && response.status === 304) {
     return document
@@ -71,6 +76,97 @@ export async function fetchEsiIntoCollection(
   }, { upsert: true })
   document!._id = key
   return document
+}
+
+/** Fetch a resource from ESI. */
+export async function fetchEsi(
+  uri: string,
+  {
+    method = 'GET',
+    statusCodes = [200],
+    search,
+    body,
+    headers = {},
+    token,
+    noCheck = false,
+  }: {
+    method?: 'GET' | 'PUT' | 'POST' | 'DELETE',
+    statusCodes?: number[],
+    search?: URLSearchParams,
+    body?: JsonObject | JsonArray,
+    headers?: Record<string, any>,
+    token?: string,
+    noCheck?: boolean,
+  } = {}
+) {
+  let uriWithSearch: string | undefined = undefined
+  let stringifiedBody: string | undefined = undefined
+
+  if (search && [...search.keys()].length) {
+    uriWithSearch = `${uri}?${search.toString()}`
+  }
+
+  const db = await getDb()
+  const collection = db.collection('responses')
+
+  if (!noCheck && method === 'GET') {
+    const responseInfo = await collection.findOne({
+      source: 'esi',
+      uri: uriWithSearch ?? uri,
+    }, { projection: { etag: 1 } })
+
+    if (responseInfo) {
+      headers['If-None-Match'] = responseInfo.etag
+
+      if (!statusCodes.includes(304)) {
+        statusCodes.push(304)
+      }
+    }
+  }
+
+  if (body) {
+    try {
+      stringifiedBody = JSON.stringify(body)
+      headers['Content-Type'] = 'application/json'
+    } catch (e) {
+      throw new TypeError('Failed to serialize body')
+    }
+  }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${ESI_URL}${uriWithSearch ?? uri}`, {
+    method,
+    headers,
+    body: stringifiedBody,
+  })
+
+  if (!statusCodes.includes(response.status)) {
+    const { error } = await response.json() as { error?: string }
+    throw new Error(`[ESI]: ${error}`)
+  }
+
+  if (!noCheck && method === 'GET' && response.ok) {
+    await collection.updateOne({
+      source: 'esi',
+      uri: uriWithSearch ?? uri
+    }, {
+      $set: {
+        source: 'esi',
+        uri: uriWithSearch ?? uri,
+        etag: response.headers.get('etag')!,
+        expiresOn: new Date(response.headers.get('expires')!),
+        lastRetrievedOn: new Date(),
+      },
+      $setOnInsert: {
+        _id: await nanoid(),
+      }
+    }, { upsert: true })
+  }
+
+  return response
 }
 
 /** Find a token which matches the filter. */

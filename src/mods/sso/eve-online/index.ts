@@ -1,7 +1,6 @@
 import type { Manifest } from 'cortex/config/mods'
-import type { Scope } from './types'
-import './policy'
-import { registerScopes } from './scopes'
+import type { Scope } from 'cortex/mods/eve-online/types'
+import { registerScopes } from '../../eve-online/scopes'
 
 export interface State {
   _id: string,

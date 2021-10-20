@@ -1,4 +1,4 @@
-import type { Scope } from './types'
+import type { Scope } from 'cortex/mods/eve-online/types'
 import { deduplicate } from 'cortex/utility/utility'
 
 const scopeMap: Record<string, Scope[]> = {}

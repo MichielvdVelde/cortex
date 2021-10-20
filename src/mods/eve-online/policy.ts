@@ -1,4 +1,4 @@
-import type { Token } from '.'
+import type { Token } from '../sso/eve-online'
 import { registerPolicy, registerPolicyGroup } from 'cortex/mods/auth/register'
 import { getDb } from 'cortex/storage/mongodb'
 import { deduplicate } from 'cortex/utility/utility'

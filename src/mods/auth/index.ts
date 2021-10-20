@@ -1,7 +1,7 @@
 import type { IdentityBasedPolicy } from 'iam-policies'
 import type { RouterContext } from '@koa/router'
 import type { Manifest } from 'cortex/config/mods'
-import type { Role } from 'cortex/mods/sso/eve-online/types'
+import type { Role } from 'cortex/mods/eve-online/types'
 import './policy'
 
 declare module 'cortex/api' {

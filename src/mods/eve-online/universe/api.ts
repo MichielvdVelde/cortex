@@ -1,10 +1,10 @@
 import HttpErrors from 'http-errors'
 import { hooks } from 'cortex/api'
 import { parseIntParameter } from 'cortex/api/utility'
-import { findToken, getStructure } from 'cortex/mods/sso/eve-online/functions'
-import { getScopesFor } from 'cortex/mods/sso/eve-online/scopes'
+import { findToken, getStructure } from 'cortex/mods/eve-online/functions'
+import { getScopesFor } from 'cortex/mods/eve-online/scopes'
 import { protect } from 'cortex/mods/auth/middleware'
-import { fetchEsi } from '../fetch'
+import { fetchEsi } from '../functions'
 
 // Load and view structure details
 hooks.register('route', {
