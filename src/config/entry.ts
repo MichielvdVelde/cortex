@@ -74,6 +74,7 @@ if (missingFlags.length) {
 
   if (specifier && !specifier.startsWith('-')) {
     const commands: Record<string, string | undefined> = {
+      init: './dist/service/init.js',
       api: './dist/api/server.js',
       processor: './dist/processor/processor.js',
     };

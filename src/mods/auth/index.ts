@@ -52,7 +52,7 @@ export interface ToPolicy {
 }
 
 export const manifest: Manifest = {
-  provides: ['api', 'storage'],
+  provides: ['api'],
   dependencies: [
     'cortex/mods/sso/eve-online'
   ],
