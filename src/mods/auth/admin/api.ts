@@ -68,11 +68,10 @@ hooks.register('route', {
     const db = await getDb('policies')
     const collection = db.collection<Policy>('policies')
 
-    if (await collection.countDocuments({ _id: path }, { limit: 1 })) {
-      await collection.deleteOne({ _id: path })
-    }
-
-    await collection.insertOne({ _id: path, ...body })
+    await collection.replaceOne({ _id: path }, {
+      _id: path,
+      ...body,
+    }, { upsert: true })
     return true
   }
 })
