@@ -24,8 +24,8 @@ registerPolicy({
 registerPolicyGroup('character', context => context.identity?.characterId)
 registerPolicyGroup('alliance', context => context.identity?.allianceId)
 registerPolicyGroup('corporation', context => context.identity?.corporationId)
-registerPolicyGroup('role', context => context.identity?.roles)
-registerPolicyGroup('title', context => context.identity?.titles)
+registerPolicyGroup('role', context => context.identity ? { $in: context.identity.roles! } : undefined)
+registerPolicyGroup('title', context => context.identity ? { $in: context.identity.titles! } : undefined)
 registerPolicyGroup('scope', async context => {
   if (!context.identity) {
     return
@@ -36,5 +36,5 @@ registerPolicyGroup('scope', async context => {
   const scopes = deduplicate((await collection.find({
     characterId: context.identity.characterId
   }, { projection: { scopes: 1 } }).toArray()).flatMap(t => t.scopes))
-  return scopes.length ? scopes : undefined
+  return scopes.length ? { $in: scopes } : undefined
 })

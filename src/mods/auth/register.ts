@@ -5,7 +5,7 @@ import type { State, Context } from 'cortex/api'
 import type { MaybePromise } from 'cortex/utility/types'
 
 const policyMap = new Map<string, Policy>()
-const policyGroups = new Map<string, (context: RouterContext<State, Context>) => MaybePromise<string | number | string[] | number[] | undefined>>()
+const policyGroups = new Map<string, (context: RouterContext<State, Context>) => MaybePromise<string | number | { $in: string[] | number[] } | undefined>>()
 
 /** Register a policy. */
 export function registerPolicy(policy: Policy): void {
@@ -26,7 +26,7 @@ export function getPolicies() {
 /** Register a policy group */
 export function registerPolicyGroup(
   type: string,
-  target: (context: RouterContext<State, Context>) => MaybePromise<string | number | string[] | number[] | undefined>
+  target: (context: RouterContext<State, Context>) => MaybePromise<string | number | { $in: string[] | number[] } | undefined>
 ): void {
   policyGroups.set(type, target)
 }
