@@ -5,5 +5,6 @@ export const manifest: Manifest = {
   provides: null,
   dependencies: [
     'cortex/mods/eve-online/universe',
+    'cortex/mods/eve-online/ui',
   ],
 }
