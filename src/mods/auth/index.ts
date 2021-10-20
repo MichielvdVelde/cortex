@@ -12,7 +12,7 @@ declare module 'cortex/api' {
     corporationId: number,
     roles?: Role[],
     titles?: number[],
-    policy: IdentityBasedPolicy<RouterContext<State, Context>>,
+    policy?: IdentityBasedPolicy<RouterContext<State, Context>>,
   }
 
   interface Context {
@@ -46,7 +46,7 @@ export interface Policy {
 
 export interface ToPolicy {
   _id: string,
-  type: 'account' | 'character' | 'corporation' | 'alliance' | 'role' | 'title' | 'scope',
+  type: string,
   target: string | number,
   policies: string[],
 }

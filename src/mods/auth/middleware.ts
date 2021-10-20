@@ -20,7 +20,7 @@ export function enforce(
       throw new HttpErrors.Unauthorized('Not logged in')
     }
 
-    if (!context.identity.policy.evaluate({
+    if (!context.identity.policy!.evaluate({
       resource: typeof resource === 'string' ? resource : resource(context),
       action,
     })) {

@@ -5,6 +5,18 @@ import { hooks } from 'cortex/api'
 import { getDb } from 'cortex/storage/mongodb'
 import { parseIntParameter } from 'cortex/api/utility'
 import { enforce } from '../middleware'
+import { getPolicyGroups } from '../register'
+
+// List all policy groups
+hooks.register('route', {
+  path: '/admin/auth/policies/groups',
+  middleware: [
+    enforce('admin:auth:policies', 'read')
+  ],
+  execute: async () => {
+    return [...getPolicyGroups()]
+  }
+})
 
 // List all policies
 hooks.register('route', {

@@ -1,4 +1,4 @@
-import { registerPolicy } from './register'
+import { registerPolicy, registerPolicyGroup } from './register'
 
 registerPolicy({
   _id: 'full',
@@ -26,3 +26,6 @@ registerPolicy({
   resource: ['admin:*'],
   action: ['read'],
 })
+
+registerPolicyGroup('account', context => context.identity?.accountId)
+registerPolicyGroup('user', context => context.identity?.characterId)

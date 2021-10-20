@@ -7,6 +7,7 @@ import { deduplicate } from 'cortex/utility/utility'
 import { getScopesFor } from 'cortex/mods/sso/eve-online/scopes'
 import { findToken } from '../sso/eve-online/functions'
 import { protect } from './middleware'
+import { createGroupFilter } from './register'
 
 hooks.register('middleware', app => {
   app.use(async (context, next) => {
@@ -40,28 +41,6 @@ hooks.register('middleware', app => {
       return next()
     }
 
-    const tokenCollection = db.collection('tokens')
-    const scopes = deduplicate((await tokenCollection.find({
-      characterId: character._id,
-    }, { projection: { scopes: 1 } }).toArray()).flatMap(token => token.scopes))
-
-    const policyDb = await getDb('policies')
-    const toPolicyCollection = policyDb.collection<ToPolicy>('to-policies')
-    const paths = deduplicate((await toPolicyCollection.find({
-      $or: [
-        { type: 'account', target: user.accountId },
-        { type: 'character', target: character._id },
-        { type: 'corporation', target: character.corporation_id },
-        { type: 'alliance', target: character.alliance_id ?? 0 },
-        { type: 'role', target: { $in: character.roles ?? [] } },
-        { type: 'title', target: { $in: character.titles ?? [] } },
-        { type: 'scope', target: { $in: scopes } },
-      ],
-    }, { projection: { policies: 1 } }).toArray()).flatMap(p => p.policies))
-
-    const policyCollection = policyDb.collection<Policy>('policies')
-    const policies = await policyCollection.find({ _id: { $in: paths }}).toArray()
-
     context.identity = {
       accountId: user.accountId,
       allianceId: character.alliance_id,
@@ -69,11 +48,21 @@ hooks.register('middleware', app => {
       corporationId: character.corporation_id,
       roles: character.roles,
       titles: character.titles,
-      policy: new IdentityBasedPolicy({
-        // @ts-expect-error
-        statements: policies,
-      })
     }
+
+    const policyDb = await getDb('policies')
+    const toPolicyCollection = policyDb.collection<ToPolicy>('to-policies')
+    const paths = deduplicate((await toPolicyCollection.find(await createGroupFilter(context as any), {
+      projection: { policies: 1 }
+    }).toArray()).flatMap(p => p.policies))
+
+    const policyCollection = policyDb.collection<Policy>('policies')
+    const policies = await policyCollection.find({ _id: { $in: paths }}).toArray()
+
+    context.identity.policy = new IdentityBasedPolicy({
+      // @ts-expect-error
+      statements: policies,
+    })
 
     return next()
   })
