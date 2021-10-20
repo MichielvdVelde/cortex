@@ -24,8 +24,8 @@ registerPolicy({
 registerPolicyGroup('character', context => context.identity?.characterId)
 registerPolicyGroup('alliance', context => context.identity?.allianceId)
 registerPolicyGroup('corporation', context => context.identity?.corporationId)
-registerPolicyGroup('role', context => context.identity ? { $in: context.identity.roles! } : undefined)
-registerPolicyGroup('title', context => context.identity ? { $in: context.identity.titles! } : undefined)
+registerPolicyGroup('role', context => context.identity?.roles ? { $in: context.identity.roles } : undefined)
+registerPolicyGroup('title', context => context.identity?.titles ? { $in: context.identity.titles } : undefined)
 registerPolicyGroup('scope', async context => {
   if (!context.identity) {
     return
