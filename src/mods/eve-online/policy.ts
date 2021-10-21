@@ -21,20 +21,16 @@ registerPolicy({
   action: ['*'],
 })
 
-registerPolicyGroup('character', context => context.identity?.characterId)
-registerPolicyGroup('alliance', context => context.identity?.allianceId)
-registerPolicyGroup('corporation', context => context.identity?.corporationId)
-registerPolicyGroup('role', context => context.identity?.roles ? { $in: context.identity.roles } : undefined)
-registerPolicyGroup('title', context => context.identity?.titles ? { $in: context.identity.titles } : undefined)
+registerPolicyGroup('character', context => context.identity!.characterId)
+registerPolicyGroup('alliance', context => context.identity!.allianceId)
+registerPolicyGroup('corporation', context => context.identity!.corporationId)
+registerPolicyGroup('role', context => context.identity!.roles ? { $in: context.identity!.roles } : undefined)
+registerPolicyGroup('title', context => context.identity!.titles ? { $in: context.identity!.titles } : undefined)
 registerPolicyGroup('scope', async context => {
-  if (!context.identity) {
-    return
-  }
-
   const db = await getDb()
   const collection = db.collection<Token>('tokens')
   const scopes = deduplicate((await collection.find({
-    characterId: context.identity.characterId
+    characterId: context.identity!.characterId
   }, { projection: { scopes: 1 } }).toArray()).flatMap(t => t.scopes))
   return scopes.length ? { $in: scopes } : undefined
 })
