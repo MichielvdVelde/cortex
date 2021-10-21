@@ -21,15 +21,25 @@ export async function getCorporation(corporationId: number): Promise<Corporation
   return fetchEsiIntoCollection(`/corporations/${corporationId}/`, 'corporations', corporationId) as Promise<Corporation>
 }
 
-export async function getStructure(structureId: number): Promise<Structure> {
-  const token = await findToken({
-    corporationId: parseInt(process.env.CORPORATION_ID!),
-    scopes: { $in: ['esi-universe.read_structures.v1'] },
-  })
-  if (!token) {
-    throw new Error('Token not found')
+export async function getStructure(structureId: number): Promise<Structure | undefined> {
+  const db = await getDb()
+  const collection = db.collection<Token>('tokens')
+  const tokens = await collection.find({
+    scopes: { $in: ['esi-search.search_structures.v1'] },
+  }).toArray()
+
+  for (let token of tokens) {
+    if (token.expiresOn.getTime() < Date.now()) {
+      token = await refreshToken(token)
+    }
+
+    try {
+      const document = await fetchEsiIntoCollection(`/universe/structures/${structureId}/`, 'structures', structureId, token.accessToken) as Promise<Structure>
+      return document
+    } catch (e) {
+      continue
+    }
   }
-  return fetchEsiIntoCollection(`/universe/structures/${structureId}/`, 'structures', structureId, token?.accessToken) as Promise<Structure>
 }
 
 /** Fetch a resource from ESI and store it in its own collection. */
@@ -59,6 +69,10 @@ export async function fetchEsiIntoCollection(
 
   if (document && response.status === 304) {
     return document
+  }
+
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}`)
   }
 
   const body = await response.json() as any
