@@ -33,3 +33,57 @@ hooks.register('route', {
     return true
   }
 })
+
+hooks.register('route', {
+  path: '/ui/information/:id',
+  method: 'put',
+  middleware: [protect()],
+  execute: async context => {
+    const id = parseIntParameter(context.params.id)
+    const token = await findToken({
+      characterId: context.identity!.characterId,
+      scopes: { $all: getScopesFor('open-window') },
+    })
+
+    if (!token) {
+      throw new HttpErrors.Unauthorized('Missing token')
+    }
+
+    // Send the open window command
+    await fetchEsi('/ui/openwindow/information/', {
+      method: 'POST',
+      token: token.accessToken,
+      search: new URLSearchParams({ target_id: `${id}` }),
+      statusCodes: [204],
+    })
+
+    return true
+  }
+})
+
+hooks.register('route', {
+  path: '/ui/market/:typeId',
+  method: 'put',
+  middleware: [protect()],
+  execute: async context => {
+    const typeId = parseIntParameter(context.params.typeId)
+    const token = await findToken({
+      characterId: context.identity!.characterId,
+      scopes: { $all: getScopesFor('open-window') },
+    })
+
+    if (!token) {
+      throw new HttpErrors.Unauthorized('Missing token')
+    }
+
+    // Send the open window command
+    await fetchEsi('/ui/openwindow/marketdetails/', {
+      method: 'POST',
+      token: token.accessToken,
+      search: new URLSearchParams({ type_id: `${typeId}` }),
+      statusCodes: [204],
+    })
+
+    return true
+  }
+})
