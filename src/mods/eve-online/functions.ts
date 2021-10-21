@@ -207,13 +207,15 @@ export async function refreshToken(token: Token): Promise<Token> {
     isRefreshToken: true,
   })
 
+  const diff = {
+    accessToken: response.access_token,
+    refreshToken: response.refresh_token,
+    expiresOn: new Date(Date.now() + (response.expires_in * 1000)),
+  }
+
   await collection.updateOne({ _id: token._id }, {
-    $set: {
-      accessToken: response.access_token,
-      refreshToken: response.refresh_token,
-      expiresOn: new Date(Date.now() + (response.expires_in * 1000)),
-    }
+    $set: diff,
   })
 
-  return collection.findOne({ _id: token._id }) as Promise<Token>
+  return { ...token, ...diff }
 }
