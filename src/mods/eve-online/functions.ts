@@ -25,7 +25,7 @@ export async function getStructure(structureId: number): Promise<Structure | und
   const db = await getDb()
   const collection = db.collection<Token>('tokens')
   const tokens = collection.find({
-    scopes: { $in: ['esi-search.search_structures.v1'] },
+    scopes: { $in: ['esi-universe.read_structures.v1'] },
   })
 
   for await (let token of tokens) {
