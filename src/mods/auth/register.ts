@@ -40,17 +40,17 @@ export async function createGroupFilter(
   context: RouterContext<State, Context>,
 ): Promise<Filter<ToPolicy>> {
   const filter: Filter<ToPolicy> = { $or: [] }
-  for (const [type, targetFn] of policyGroups) {
-    let value = targetFn(context)
-    if (value instanceof Promise) {
-      value = await value
+  for (const [type, fn] of policyGroups) {
+    let target = fn(context)
+    if (target instanceof Promise) {
+      target = await target
     }
-    if (value === undefined) {
+    if (target === undefined) {
       continue
     }
     filter.$or!.push({
       type,
-      target: value,
+      target,
     })
   }
 

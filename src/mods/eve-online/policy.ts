@@ -31,6 +31,6 @@ registerPolicyGroup('scope', async context => {
   const collection = db.collection<Token>('tokens')
   const scopes = deduplicate((await collection.find({
     characterId: context.identity!.characterId
-  }, { projection: { scopes: 1 } }).toArray()).flatMap(t => t.scopes))
+  }, { projection: { scopes: 1 } }).toArray()).flatMap(token => token.scopes))
   return scopes.length ? { $in: scopes } : undefined
 })
