@@ -24,11 +24,11 @@ export async function getCorporation(corporationId: number): Promise<Corporation
 export async function getStructure(structureId: number): Promise<Structure | undefined> {
   const db = await getDb()
   const collection = db.collection<Token>('tokens')
-  const tokens = await collection.find({
+  const tokens = collection.find({
     scopes: { $in: ['esi-search.search_structures.v1'] },
-  }).toArray()
+  })
 
-  for (let token of tokens) {
+  for await (let token of tokens) {
     if (token.expiresOn.getTime() < Date.now()) {
       token = await refreshToken(token)
     }
